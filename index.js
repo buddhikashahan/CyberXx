@@ -10,12 +10,8 @@ const P = require('pino')
 const qrcode = require('qrcode-terminal')
 const util = require('util')
 const config = require('./config')
-const yts = require( 'yt-search' )
 const axios = require('axios')
-const apk_link = require('./lib/playstore');
-const { sms } = require('./lib/message');
 const ffmpeg = require('fluent-ffmpeg');
-const { imageToWebp, videoToWebp, writeExif } = require('./lib/stic')
 const { getBuffer, getGroupAdmins, getRandom, h2k, isUrl, Json, runtime, sleep } = require('./lib/functions')
 const { state, saveState } = useSingleFileAuthState('./session.json')
 
