@@ -5,13 +5,14 @@ const {
 	getContentType,
     jidDecode
 } = require('@adiwajshing/baileys')
-const yts = require( 'yt-search' )
+const yts = require( 'secktor-pack' )
 const { sms } = require('./lib/message');
 const { imageToWebp, videoToWebp, writeExif } = require('./lib/stic')
 const ffmpeg = require('fluent-ffmpeg');
 const xa = require('xfarr-api')
 const { mediafire } = require('./lib/mediafire.js')
 const fetch = require('node-fetch')
+const { fetchJson} = require('./lib/myfunc.js')
 
 const fs = require('fs')
 const P = require('pino')
@@ -84,6 +85,7 @@ const connectToWA = () => {
     	    const isBotAdmins = mek.isGroup ? groupAdmins.includes(botNumber) : false
     	    const isAdmins = mek.isGroup ? groupAdmins.includes(mek.sender) : false
 
+           
             if (!isOwner && body.includes('chat.whatsapp.com')) {
                 await conn.sendMessage(from, { delete: mek.key })
             }       
@@ -122,18 +124,19 @@ break
 
 //.......................................................Alive..............................................................\\
 
-case 'owner' :
+case 'owner' : {
 		const vcard = 'BEGIN:VCARD\n' // metadata of the contact card
             + 'VERSION:3.0\n' 
             + `FN:` + 'Buddhika' + `\n` // full name
             + 'TEL;type=CELL;type=VOICE;waid=' + '94766866297' + ':+' + '94766866297' + '\n' // WhatsApp ID + phone number
             + 'END:VCARD'
  await conn.sendMessage(from,{ contacts: { displayName: 'noureddine_ouafy' , contacts: [{ vcard }]  }} , { quoted: mek })      
-		      break 
+}
+break 
 
 //.......................................................Menu..............................................................\\
 
-case 'menu' :
+case 'menu' : {
 let menumsg = `◉═════════════◉
   🐉CyberX Commands🐉
 ◉═════════════◉
@@ -142,15 +145,15 @@ let menumsg = `◉═════════════◉
 │.song
 │.video
 │.yt
-│.ytdl
 │.fb
 │.mediafire 
 │.img
 │.tiktok
-│.apk
+│.ig
 └─────────◉
 ┌─(🔍ꜱᴇᴀʀᴄʜ ᴄᴏᴍᴍᴀɴᴅꜱ)
 │.yts
+│.truecaller
 └─────────◉
 ┌─(🧰ᴄᴏɴᴠᴇʀᴛ ᴄᴏᴍᴍᴀɴᴅꜱ)
 │.sticker
@@ -160,12 +163,50 @@ let menumsg = `◉═════════════◉
 │.alive
 └─────────◉`
 reply(menumsg)
+}
 break
 
-//.......................................................Youtube..............................................................\\
 
-case 'yts': case 'getyt': 
-try {
+//.......................................................Instagram..............................................................\\
+
+case'ig': case'instagram':  try{
+  if (!q.includes('https')) return conn.sendMessage(from , { text: 'Need Url'  }, { quoted: mek } )
+ 
+  const viddown = await conn.sendMessage(from , { text: config.VIDEO_DOWN }, { quoted: mek } )
+  await conn.sendMessage(from, { delete: viddown.key })
+  const vidup = await conn.sendMessage(from , { text: config.VIDEO_UP }, { quoted: mek } )
+  axios
+      .get("https://api.lolhuman.xyz/api/instagram?apikey=85faf717d0545d14074659ad&url=" + q)
+      .then(({ data }) => {
+        
+        conn.sendMessage(from, { video: { url: data.result[0] }, caption: config.CAPTION}, { quoted: mek })})
+   await conn.sendMessage(from, { delete: vidup.key })
+  
+} catch(e) {
+  await conn.sendMessage(from , { text: 'NOT FOUND' }, { quoted: mek } ) 
+ }
+    break
+
+//.......................................................Truecaller..............................................................\\
+
+case'true': case'truecaller':{
+  let r = await fetchJson(`https://inrl-web.vercel.app/api/truecaller?number=${q}`)
+    let rsltd = `
+*Owner:* ${r.name}
+*Type:* ${r.type}
+*Country:* ${r.country}
+*City:* ${r.city}
+*Sim Company:* ${r.carrier}
+*TimeZone:* ${r.timeZone}
+*_Result From truecaller_*
+`
+    reply(rsltd)
+}
+break
+
+
+//.......................................................Youtube..............................................................\\
+case 'yts': case 'ytsearch': {
     
     conn.sendMessage(from, { react: { text: '🔍', key: mek.key }})
        if (!q) return reply('Example : ' + prefix + command + ' Chanux bro')
@@ -175,22 +216,16 @@ try {
    msg += ' *🖲️' + video.title + '*\n🔗 ' + video.url + '\n\n'
    });
    const results = await conn.sendMessage(from , { text:  msg }, { quoted: mek } )
-   } catch(e) {
-    await conn.sendMessage(from , { text: 'NOT FOUND' }, { quoted: mek } ) 
    }
     break	
+                       
+                   case 'play': case 'yt': {
                
- case 'play': case 'yt': 
-                   
-                   try {
-               
-                    conn.sendMessage(from, { react: { text: '🔍', key: mek.key }})
-                    if (!q) return reply('Example : ' + prefix + command + ' lelena')
-                let yts = require("yt-search")
-                var svid = q.replace("shorts/","watch?v=")
-                var s2vid = svid.replace("?feature=share","")
-                let search = await yts(s2vid)
-                let anu = search.videos[0]
+       conn.sendMessage(from, { react: { text: '🔍', key: mek.key }})
+       if (!q) return reply('Example : ' + prefix + command + ' lelena')
+
+   let search = await yts(q)
+   let anu = search.videos[0]
    let buttons = [
    {buttonId: prefix + 'ytmp4 ' +  anu.url + ' 360p', buttonText: {displayText: 'VIDEO'}, type: 1},
    {buttonId: '.ytmp3 ' + anu.url + ' 128kbps', buttonText: {displayText: 'AUDIO'}, type: 1}
@@ -203,21 +238,16 @@ try {
    headerType: 4,
    }
    conn.sendMessage(from, buttonMessage, { quoted: mek })
-} catch(e) {
-    await conn.sendMessage(from , { text: 'NOT FOUND' }, { quoted: mek } ) 
    }
-
    break
-                       case 'song':  
-                       try {
-                        conn.sendMessage(from, { react: { text: '🎧', key: mek.key }})
-                        if (!q) return reply('Example : ' + prefix + command + ' lelena')
-                    let yts = require("yt-search")
-                    var svid = q.replace("shorts/","watch?v=")
-                    var s2vid = svid.replace("?feature=share","")
-                    let search = await yts(s2vid)
-                    let anu = search.videos[0]
-                        
+                       case 'song':  {
+               
+       conn.sendMessage(from, { react: { text: '🎧', key: mek.key }})
+       if (!q) return reply('Example : ' + prefix + command + ' lelena')
+       var svid = q.replace("shorts/","watch?v=")
+       var s2vid = svid.replace("?feature=share","")
+      let search = await yts(s2vid)
+   let anu = search.videos[0]
    let buttons = [
    {buttonId: prefix + 'ytdoc ' +  anu.url , buttonText: {displayText: 'DOCUMENT'}, type: 1},
    {buttonId: prefix + 'ytmp3 ' + anu.url , buttonText: {displayText: 'AUDIO'}, type: 1}
@@ -230,21 +260,16 @@ try {
    headerType: 4,
    }
    conn.sendMessage(from, buttonMessage, { quoted: mek })
-   } catch(e) {
-    await conn.sendMessage(from , { text: 'NOT FOUND' }, { quoted: mek } ) 
    }
-
    break
                        
                        
-                       case 'video': 
-                       try {
+                       case 'video':  {
                
        conn.sendMessage(from, { react: { text: '📽️', key: mek.key }})
        if (!q) return reply('Example : ' + prefix + command + ' lelena')
-   let yts = require("yt-search")
-   var svid = q.replace("shorts/","watch?v=")
-   var s2vid = svid.replace("?feature=share","")
+       var svid = q.replace("shorts/","watch?v=")
+var s2vid = svid.replace("?feature=share","")
    let search = await yts(s2vid)
    let anu = search.videos[0]
    let buttons = [
@@ -260,179 +285,67 @@ try {
    headerType: 4,
    }
    conn.sendMessage(from, buttonMessage, { quoted: mek })
-} catch(e) {
-    await conn.sendMessage(from , { text: 'error' }, { quoted: mek } ) 
    }
    break
-                       
-                       case 'ytdl': 
-                       try {
-                        conn.sendMessage(from, { react: { text: '🔍', key: mek.key }})
-                        if (!q) return reply('Example : ' + prefix + command + ' lelena')
-                    let yts = require("yt-search")
-                    var svid = q.replace("shorts/","watch?v=")
-                    var s2vid = svid.replace("?feature=share","")
-                    let search = await yts(s2vid)
-                    let anu = search.videos[0]
-                          
-   const listMessage = {
-         text: '┌───[🐉CyberX🐉]\n\n  *📥ADVANCE DOWNLODER*\n\n│🧚ᴛɪᴛʟᴇ: ' + anu.title + '\n\n│ 👀ᴠɪᴇᴡs: ' + anu.views + '\n\n│ 📹 ᴄʜᴀɴɴᴇʟ: ' + anu.author + '\n\n│🖇️ᴜʀʟ: ' + anu.url + '\n\n└───────────◉',
-         footer: config.FOOTER,
-         title: 'Hello ' + pushname ,
-         buttonText: "Results",
-         sections: [{
-                                   "title": "Advance Video Quality",
-                                   "rows": [
-                                       {
-                                           "title": "1080p",
-                                           "description": "",
-                                           "rowId": prefix + 'ytmp4 ' + anu.url + ' 1080p'
-                                       },
    
-                                                                           {
-                                           "title": "720p",
-                                           "description": "",
-                                           "rowId": prefix + 'ytmp4 ' + anu.url + ' 720p'
-                                       },
-                                                                           {
-                                           "title": "480p",
-                                           "description": "",
-                                           "rowId": prefix + 'ytmp4 ' + anu.url + ' 480p'
-                                       },
-                                                                           {
-                                           "title": "360p",
-                                           "description": "",
-                                           "rowId": prefix + 'ytmp4 ' + anu.url + ' 360p'
-                                       },
-                                                                           {
-                                           "title": "240p",
-                                           "description": "",
-                                           "rowId": prefix + 'ytmp4 ' + anu.url + ' 240p'
-                                       },
-                                                   {
-                                           "title": "144p",
-                                           "description": "",
-                                           "rowId": prefix + 'ytmp4 ' + anu.url + ' 144p'
-                                       }
-                                   ]
-                               },
-                               {
-                                   "title": "Advance Mp3 Audio",
-                                   "rows": [
-                                       {
-                                           "title": "High",
-                                           "description": "",
-                                           "rowId": prefix + 'ytmp3 ' + anu.url + ' 320kbps'
-                                       },
-                                       {
-                                           "title": "Medium",
-                                           "description": "",
-                                           "rowId": prefix + 'ytmp3 ' + anu.url + ' 256kbps'
-                                           },
-                                       {
-                                           "title": "Low",
-                                           "description": "",
-                                           "rowId": prefix + 'ytmp3 ' + anu.url + ' 128kbps'
-                                           }
-                                           
-                                   ]
-                               },
-                               {
-                                   "title": "Advance Mp3 Document",
-                                   "rows": [
-                                       {
-                                           "title": "High",
-                                           "description": "",
-                                           "rowId": prefix + 'ytdoc ' + anu.url + ' 320kbps'
-                                       },
-                                       {
-                                           "title": "Medium",
-                                           "description": "",
-                                           "rowId": prefix + 'ytdoc ' + anu.url + ' 256kbps'
-                                           },
-                                       {
-                                           "title": "Low",
-                                           "description": "",
-                                           "rowId": prefix + 'ytdoc ' + anu.url + ' 128kbps'
-                                           }
-                                   ]
-                               }
-                               
-                           ]
+   
+                       
+                       
+   
+   case 'ytmp4': 
+   try {
+   await conn.sendMessage(from, { react: { text: '📽️', key: mek.key }})
+   if ( !q.includes('youtu') ) return await conn.sendMessage(from , { text: '*Need yt link*' }, { quoted: mek } )  
+              let { ytv } = require('./lib/y2mate')
+                     let quality = args[1] ? args[1] : '360p'
+                     let media = await ytv(q, quality)
+
+   const viddown = await conn.sendMessage(from , { text: config.VIDEO_DOWN }, { quoted: mek } )
+   await conn.sendMessage(from, { delete: viddown.key })
+   const vidup = await conn.sendMessage(from , { text: config.VIDEO_UP }, { quoted: mek } )
+   const vid = await conn.sendMessage(from, { video: { url: media.dl_link }, mimetype: 'video/mp4', fileName: media.title + '.mp4', caption: config.CAPTION }, { quoted: mek })
+   await conn.sendMessage(from, { delete: vidup.key })
+} catch(e) {
+    await conn.sendMessage(from , { text: 'NOT FOUND' }, { quoted: mek } ) 
+   }
+                 break
+
+break
+case'ytdoc': try{
+  if (!q.includes('https')) return conn.sendMessage(from , { text: 'Need Url'  }, { quoted: mek } )
+ 
+  const auddown = await conn.sendMessage(from , { text: config.SONG_DOWN }, { quoted: mek } )
+  await conn.sendMessage(from, { delete: auddown.key })
+  const audup = await conn.sendMessage(from , { text: config.SONG_UP }, { quoted: mek } )
+  axios
+      .get("https://api.lolhuman.xyz/api/ytaudio2?apikey=85faf717d0545d14074659ad&url=" + q)
+      .then(({ data }) => {
+        let result = data.result
+   conn.sendMessage(from, { document: { url:result.link }, mimetype: 'audio/mpeg', fileName:  `${result.title}.mp3` }, { quoted: mek })})
+   await conn.sendMessage(from, { delete: audup.key })
+  
+} catch(e) {
+  await conn.sendMessage(from , { text: 'NOT FOUND' }, { quoted: mek } ) 
+ }
+    break
+
+    case'ytmp3': try{
+      if (!q.includes('https')) return conn.sendMessage(from , { text: 'Need Url'  }, { quoted: mek } )
+     
+      const auddown = await conn.sendMessage(from , { text: config.SONG_DOWN }, { quoted: mek } )
+      await conn.sendMessage(from, { delete: auddown.key })
+      const audup = await conn.sendMessage(from , { text: config.SONG_UP }, { quoted: mek } )
+      axios
+          .get("https://api.lolhuman.xyz/api/ytaudio2?apikey=85faf717d0545d14074659ad&url=" + q)
+          .then(({ data }) => {
+            let result = data.result
+       conn.sendMessage(from, { audio: { url:result.link }, mimetype: 'audio/mpeg', fileName:  `${result.title}.mp3` }, { quoted: mek })})
+       await conn.sendMessage(from, { delete: audup.key })
+      
+    } catch(e) {
+      await conn.sendMessage(from , { text: 'NOT FOUND' }, { quoted: mek } ) 
      }
-               await conn.sendMessage(from, listMessage, {quoted: mek })
-            } catch(e) {
-                await conn.sendMessage(from , { text: 'error' }, { quoted: mek } ) 
-               }
-               break
-   
-               case 'ytmp3': 
-               try {
-                await conn.sendMessage(from, { react: { text: '🎧', key: mek.key }})
-                if ( !q.includes('youtu') ) return await conn.sendMessage(from , { text: '*Need yt link*' }, { quoted: mek } )  
-                          let { yta } = require('./lib/y2mate')
-                                  let quality = args[1] ? args[1] : '128kbps'
-                                  let media = await yta(q, quality)
-                const auddown = await conn.sendMessage(from , { text: config.SONG_DOWN }, { quoted: mek } )
-                await conn.sendMessage(from, { delete: auddown.key })
-                const audup = await conn.sendMessage(from , { text: config.SONG_UP }, { quoted: mek } )
-                const au = await conn.sendMessage(from, { audio: { url: media.dl_link }, mimetype: 'audio/mpeg', fileName: media.title + '.mp3' }, { quoted: mek })
-                await conn.sendMessage(from, { delete: audup.key })
-                
-            } catch(e) {
-                await conn.sendMessage(from , { text: 'NOT FOUND' }, { quoted: mek } ) 
-               }
-                              break
-
-                              case 'ytdoc': 
-                              try {
-                                await conn.sendMessage(from, { react: { text: '🎧', key: mek.key }})
-                                if ( !q.includes('youtu') ) return await conn.sendMessage(from , { text: '*Need yt link*' }, { quoted: mek } )  
-                                          let { yta } = require('./lib/y2mate')
-                                                  let quality = args[1] ? args[1] : '128kbps'
-                                                  let media = await yta(q, quality)
-                                                  const docdown = await conn.sendMessage(from , { text: config.SONG_DOWN }, { quoted: mek } )
-                                                  await conn.sendMessage(from, { delete: docdown.key })
-                                                  const docup = await conn.sendMessage(from , { text: config.SONG_UP }, { quoted: mek } )
-                                                  const doc = await conn.sendMessage(from, { document: { url: media.dl_link }, mimetype: 'audio/mpeg', fileName: media.title + '.mp3' }, { quoted: mek })
-                                                  await conn.sendMessage(from, { delete: docup.key })
-                            } catch(e) {
-                                await conn.sendMessage(from , { text: 'NOT FOUND' }, { quoted: mek } ) 
-                               }
-                                                 break
-                       
-                       case 'ytmp4': 
-                       try {
-                       await conn.sendMessage(from, { react: { text: '📽️', key: mek.key }})
-                       if ( !q.includes('youtu') ) return await conn.sendMessage(from , { text: '*Need yt link*' }, { quoted: mek } )  
-                                  let { ytv } = require('./lib/y2mate')
-                                         let quality = args[1] ? args[1] : '360p'
-                                         let media = await ytv(q, quality)
-                                         if (media.filesize >= 100000) {
-                                         const msg = '*VIDEO SIZE UP TO 100MB ⛔*'
-                                         const templateButtons = [
-                                           { urlButton: {displayText: 'ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ 🎯' , url: media.dl_link + '.mp4' }},
-                                         ]
-                   
-                                         const templateMessage = {
-                                         text: msg,
-                                         footer: config.FOOTER,
-                                         templateButtons: templateButtons
-                                         }
-                   
-                                         await conn.sendMessage(from, templateMessage, { quoted: mek })   
-                                       }
-                    
-                       const viddown = await conn.sendMessage(from , { text: config.VIDEO_DOWN }, { quoted: mek } )
-                       await conn.sendMessage(from, { delete: viddown.key })
-                       const vidup = await conn.sendMessage(from , { text: config.VIDEO_UP }, { quoted: mek } )
-                       const vid = await conn.sendMessage(from, { video: { url: media.dl_link }, mimetype: 'video/mp4', fileName: media.title + '.mp4', caption: config.CAPTION }, { quoted: mek })
-                       await conn.sendMessage(from, { delete: vidup.key })
-                    } catch(e) {
-                        await conn.sendMessage(from , { text: 'NOT FOUND' }, { quoted: mek } ) 
-                       }
-                                     break
-
+        break
 //.......................................................Sticker..............................................................\\
 
 case 'sticker' :
@@ -460,6 +373,8 @@ case 'sticker' :
 	       v.reply('Reply to image or video')
         }
               break 
+
+            
 
 //.......................................................Fb..............................................................\\
 
@@ -533,6 +448,9 @@ await conn.sendMessage(from, { delete: sdfbup.key })
 case 'img': {
     conn.sendMessage(from, { react: { text: '🖼️', key: mek.key }})
 if (!q) return reply("Enter a search term to get Google Image!")
+if (q.includes('sex')) return reply("ආසයි වගේ")
+if (q.includes('xxx')) return reply("ආසයි වගේ")
+if (q.includes('porn')) return reply("ආසයි වගේ")
 reply (`*Plz Wait I\'m Uploading 5 Images Of ${q}*`)
 let gis = require('g-i-s')
 gis(args.join(" "), async (error, result) => {
@@ -901,7 +819,10 @@ await conn.sendMessage(from , { text: 'error' }, { quoted: mek } )
 //.......................................................Apk..............................................................\\
 
 
- 
+
+           
+
+     
 				default:
 					
 					if (isOwner && body.startsWith('>')) {
