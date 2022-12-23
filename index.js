@@ -108,7 +108,8 @@ Whatsapp Group :
 https://chat.whatsapp.com/KmE7YzrrQBk124CrpI8PCd`
 let buttons = [
 {buttonId: prefix + 'owner ', buttonText: {displayText: 'OWNER'}, type: 1},
-{buttonId: prefix + 'menu ', buttonText: {displayText: 'MENU'}, type: 1}
+{buttonId: prefix + 'menu ', buttonText: {displayText: 'MENU'}, type: 1},
+{buttonId: prefix + 'runtime ', buttonText: {displayText: 'RUN TIME'}, type: 1}
 ]
 let buttonMessage = {
 image: {url: config.ALIVE_LOGO},
@@ -121,7 +122,15 @@ conn.sendMessage(from, buttonMessage, { quoted: mek })
 }
 break
 
-//.......................................................Alive..............................................................\\
+//.......................................................Runtime..............................................................\\
+
+case 'runtime':{          
+  await conn.sendMessage(from, { react: { text: `⚙️`, key: mek.key }})
+   reply (`${runtime(process.uptime())}`)
+  }
+  break
+
+//.......................................................Owner..............................................................\\
 
 case 'owner' : {
   await conn.sendMessage(from, { react: {  text: "👨‍💻", key: mek.key } } )
@@ -139,31 +148,62 @@ break
 case 'menu' : {
   await conn.sendMessage(from, { react: {  text: "💫", key: mek.key } } )
 let menumsg = `◉═════════════◉
-  🐉CyberX Commands🐉
+  *🐉CyberX Commands🐉*
 ◉═════════════◉
 
-┌─(📥ᴅᴏᴡɴʟᴏᴀᴅᴇʀ ᴄᴏᴍᴍᴀɴᴅꜱ)
-│.song
-│.video
-│.yt
-│.fb
-│.mediafire 
-│.img
-│.tiktok
-│.ig
-│.apk
+┌─( *📥ᴅᴏᴡɴʟᴏᴀᴅᴇʀ ᴄᴏᴍᴍᴀɴᴅꜱ* )
+
+*🪄 Command :* .song
+*📒 Description :* Download Songs from youtube 
+
+*🪄 Command :* .video
+*📒 Description :* Download Videos from youtube 
+
+*🪄 Command :* .yt
+*📒 Description :* Download Audio/Video from youtube 
+
+*🪄 Command :* .img
+*📒 Description :* Download images
+
+*🪄 Command :* .fb
+*📒 Description :* Download Facebook videos
+
+*🪄 Command :* .tiktok
+*📒 Description :* Download tiktok videos
+
+*🪄 Command :* .ig
+*📒 Description :* Download Instagram videos
+
+*🪄 Command :* .mediafire 
+*📒 Description :* Download mediafire files
+
+*🪄 Command :* .apk
+*📒 Description :* Download apps
+
 └─────────◉
-┌─(🔍ꜱᴇᴀʀᴄʜ ᴄᴏᴍᴍᴀɴᴅꜱ)
-│.yts
-│.truecaller
+┌─( *🔍ꜱᴇᴀʀᴄʜ ᴄᴏᴍᴍᴀɴᴅꜱ* )
+
+*🪄 Command :* .yts
+*📒 Description :* Search videos on youtube 
+
+*🪄 Command :* .truecaller
+*📒 Description :* Find Unknown numbers
+
 └─────────◉
-┌─(🧰ᴄᴏɴᴠᴇʀᴛ ᴄᴏᴍᴍᴀɴᴅꜱ)
-│.sticker
-│.logo
+┌─( *🧰ᴄᴏɴᴠᴇʀᴛ ᴄᴏᴍᴍᴀɴᴅꜱ* )
+
+*🪄 Command :* .sticker
+*📒 Description :* Convert image or video to sticker
+
 └─────────◉
-┌─(💫ᴏᴛʜᴇʀ ᴄᴏᴍᴍᴀɴᴅꜱ)
-│.alive
-│.menu
+┌─( 💫ᴏᴛʜᴇʀ ᴄᴏᴍᴍᴀɴᴅꜱ )
+
+*🪄 Command :* .alive
+*📒 Description :* Check if bot is online
+
+*🪄 Command :* .menu
+*📒 Description :* Get command list
+
 └─────────◉`
 reply(menumsg)
 }
