@@ -99,8 +99,7 @@ const connectToWA = () => {
 //.......................................................Alive..............................................................\\
 
 case 'alive': {
- conn.sendMessage(from, { react: { text: '👋', key: mek.key }})
- 
+await conn.sendMessage(from, { react: {  text: "👋", key: mek.key } } )
 let alivemsg = `Hello ${pushname} 
 
 I Am Alive Now
@@ -125,6 +124,7 @@ break
 //.......................................................Alive..............................................................\\
 
 case 'owner' : {
+  await conn.sendMessage(from, { react: {  text: "👨‍💻", key: mek.key } } )
 		const vcard = 'BEGIN:VCARD\n' // metadata of the contact card
             + 'VERSION:3.0\n' 
             + `FN:` + 'Buddhika' + `\n` // full name
@@ -137,6 +137,7 @@ break
 //.......................................................Menu..............................................................\\
 
 case 'menu' : {
+  await conn.sendMessage(from, { react: {  text: "💫", key: mek.key } } )
 let menumsg = `◉═════════════◉
   🐉CyberX Commands🐉
 ◉═════════════◉
@@ -150,6 +151,7 @@ let menumsg = `◉═════════════◉
 │.img
 │.tiktok
 │.ig
+│.apk
 └─────────◉
 ┌─(🔍ꜱᴇᴀʀᴄʜ ᴄᴏᴍᴍᴀɴᴅꜱ)
 │.yts
@@ -161,15 +163,74 @@ let menumsg = `◉═════════════◉
 └─────────◉
 ┌─(💫ᴏᴛʜᴇʀ ᴄᴏᴍᴍᴀɴᴅꜱ)
 │.alive
+│.menu
 └─────────◉`
 reply(menumsg)
 }
 break
 
 
+//.......................................................Apk..............................................................\\                            
+
+case "apk" :
+		     try {
+          await conn.sendMessage(from, { react: {  text: "📦", key: mek.key } } )
+			 if (!q) return await conn.sendMessage(from , { text: 'need app name' }, { quoted: mek } )        
+		     const data2 = await fetchJson("https://api.akuari.my.id/search/searchapk2?query=" + q)
+         const data = data2.respon
+		     if (data.length < 1) return await  conn.sendMessage(from, { text: 'Not Found' }, { quoted: mek } )
+	  var srh = [];  
+		   for (var i = 0; i < data.length; i++) {
+      srh.push({
+          title: data[i].title,
+          description: '',
+          rowId: prefix + 'dapk ' + data[i].link 
+      });
+  }
+    const sections = [{
+      title: "Playstore Search Results",
+      rows: srh
+  }]
+    const listMessage = {
+      text: " \n\n name : " + q + '\n\n ',
+      footer: config.FOOTER,
+      title: 'CyberX APK Downloader',
+      buttonText: "Results",
+      sections
+  }
+    await conn.sendMessage(from, listMessage, {quoted: mek })
+		      } catch(e) {
+await conn.sendMessage(from , { text: 'error' }, { quoted: mek } )  
+} 
+		      
+	 break
+
+
+
+case "dapk" : 
+try {
+  await conn.sendMessage(from, { react: {  text: "📥", key: mek.key } } )
+  const res = await fetchJson("https://api.akuari.my.id/downloader/dlapk2?link=" + q)
+  const filedown = await conn.sendMessage(from , { text: config.FILE_DOWN }, { quoted: mek } )
+  await conn.sendMessage(from, { delete: filedown.key })
+  const fileup = await conn.sendMessage(from , { text: config.FILE_UP }, { quoted: mek } )
+  var ext = ''
+  if (res.respon.linkdl.includes('.xapk')) { ext = '.xapk' } 
+  else { ext = '.apk' }
+  const mfile = conn.sendMessage(from, { document: { url: res.respon.linkdl ,}, fileName: 'Result' + ext , mimetype: 'application/vnd.android.package-archive',}, {quoted: mek})	
+  await conn.sendMessage(from, { delete: fileup.key })
+} 
+catch(e) {
+    await conn.sendMessage(from , { text: 'error\n\n' + e }, { quoted: mek } )
+}
+      
+  break 
+
+
 //.......................................................Instagram..............................................................\\
 
 case'ig': case'instagram':  try{
+  await conn.sendMessage(from, { react: {  text: "🎉", key: mek.key } } )
   if (!q.includes('https')) return conn.sendMessage(from , { text: 'Need Url'  }, { quoted: mek } )
  
   const viddown = await conn.sendMessage(from , { text: config.VIDEO_DOWN }, { quoted: mek } )
@@ -190,15 +251,18 @@ case'ig': case'instagram':  try{
 //.......................................................Truecaller..............................................................\\
 
 case'true': case'truecaller':{
+  await conn.sendMessage(from, { react: {  text: "📱", key: mek.key } } )
   let r = await fetchJson(`https://inrl-web.vercel.app/api/truecaller?number=${q}`)
     let rsltd = `
-*Owner:* ${r.name}
+*Name:* ${r.name}
+
 *Type:* ${r.type}
+
 *Country:* ${r.country}
-*City:* ${r.city}
-*Sim Company:* ${r.carrier}
+
+*Carrier:* ${r.carrier}
+
 *TimeZone:* ${r.timeZone}
-*_Result From truecaller_*
 `
     reply(rsltd)
 }
@@ -207,8 +271,8 @@ break
 
 //.......................................................Youtube..............................................................\\
 case 'yts': case 'ytsearch': {
-    
-    conn.sendMessage(from, { react: { text: '🔍', key: mek.key }})
+
+    await conn.sendMessage(from, { react: {  text: "🔎", key: mek.key } } )
        if (!q) return reply('Example : ' + prefix + command + ' Chanux bro')
     var arama = await yts(q)
     var msg = '';
@@ -220,8 +284,8 @@ case 'yts': case 'ytsearch': {
     break	
                        
                    case 'play': case 'yt': {
+                    await conn.sendMessage(from, { react: {  text: "🎀", key: mek.key } } )
                
-       conn.sendMessage(from, { react: { text: '🔍', key: mek.key }})
        if (!q) return reply('Example : ' + prefix + command + ' lelena')
 
    let search = await yts(q)
@@ -241,8 +305,7 @@ case 'yts': case 'ytsearch': {
    }
    break
                        case 'song':  {
-               
-       conn.sendMessage(from, { react: { text: '🎧', key: mek.key }})
+                        await conn.sendMessage(from, { react: {  text: "🎧", key: mek.key } } )     
        if (!q) return reply('Example : ' + prefix + command + ' lelena')
        var svid = q.replace("shorts/","watch?v=")
        var s2vid = svid.replace("?feature=share","")
@@ -265,8 +328,7 @@ case 'yts': case 'ytsearch': {
                        
                        
                        case 'video':  {
-               
-       conn.sendMessage(from, { react: { text: '📽️', key: mek.key }})
+                        await conn.sendMessage(from, { react: {  text: "🎬", key: mek.key } } )
        if (!q) return reply('Example : ' + prefix + command + ' lelena')
        var svid = q.replace("shorts/","watch?v=")
 var s2vid = svid.replace("?feature=share","")
@@ -294,7 +356,7 @@ var s2vid = svid.replace("?feature=share","")
    
    case 'ytmp4': 
    try {
-   await conn.sendMessage(from, { react: { text: '📽️', key: mek.key }})
+    await conn.sendMessage(from, { react: {  text: "🎬", key: mek.key } } )
    if ( !q.includes('youtu') ) return await conn.sendMessage(from , { text: '*Need yt link*' }, { quoted: mek } )  
               let { ytv } = require('./lib/y2mate')
                      let quality = args[1] ? args[1] : '360p'
@@ -312,6 +374,7 @@ var s2vid = svid.replace("?feature=share","")
 
 break
 case'ytdoc': try{
+  await conn.sendMessage(from, { react: {  text: "🎧", key: mek.key } } )
   if (!q.includes('https')) return conn.sendMessage(from , { text: 'Need Url'  }, { quoted: mek } )
  
   const auddown = await conn.sendMessage(from , { text: config.SONG_DOWN }, { quoted: mek } )
@@ -330,6 +393,7 @@ case'ytdoc': try{
     break
 
     case'ytmp3': try{
+      await conn.sendMessage(from, { react: {  text: "🎧", key: mek.key } } )
       if (!q.includes('https')) return conn.sendMessage(from , { text: 'Need Url'  }, { quoted: mek } )
      
       const auddown = await conn.sendMessage(from , { text: config.SONG_DOWN }, { quoted: mek } )
@@ -349,7 +413,7 @@ case'ytdoc': try{
 //.......................................................Sticker..............................................................\\
 
 case 'sticker' :
-          await conn.sendMessage(from, { react: { text: '🪄', key: mek.key }})
+  await conn.sendMessage(from, { react: {  text: "🪄", key: mek.key } } )
           const v = sms(conn , mek)
           const isQuotedViewOnce = v.quoted ? (v.quoted.type === 'viewOnceMessage') : false
 	        const isQuotedImage = v.quoted ? ((v.quoted.type === 'imageMessage') || (isQuotedViewOnce ? (v.quoted.msg.type === 'imageMessage') : false)) : false
@@ -379,23 +443,29 @@ case 'sticker' :
 //.......................................................Fb..............................................................\\
 
 case 'fb' : case 'facebook' : {
-	     if (!q) return await conn.sendMessage(from , { text: 'need fb link' }, { quoted: mek } ) 
-         conn.sendMessage(from , { react: { text: '💎', key: mek.key }} )     
+  await conn.sendMessage(from, { react: {  text: "🧣", key: mek.key } } )
+	     if (!q) return await conn.sendMessage(from , { text: 'need fb link' }, { quoted: mek } )   
 	     const isfb = q.includes('facebook.com')? q.includes('facebook.com') : q.includes('fb.watch')? q.includes('fb.watch') : ''
              if (!isfb) return await conn.sendMessage(from , { text: 'need fb link' }, { quoted: mek } )  
-		
-      const buttons = [
-{buttonId: prefix +'sdfb ' + q, buttonText: {displayText: 'SD '}, type: 1},
-{buttonId: prefix +'hdfb ' + q, buttonText: {displayText: 'HD '}, type: 1},
-]
- await conn.sendMessage(from, {  text: 'Select Video Type :', buttons: buttons , headerType: 4} , { quoted: mek } )  
-		      
-	      }   
+             let fbmsg = `Select Video Quality`
+             let buttons = [
+             {buttonId: prefix + 'hdfb ' + q , buttonText: {displayText: 'HD'}, type: 1},
+             {buttonId: prefix + 'sdfb ' + q , buttonText: {displayText: 'SD'}, type: 1}
+             ]
+             let buttonMessage = {
+             image: {url: 'https://i.pinimg.com/736x/7c/a2/53/7ca2532387a96ae6b775ee6545b6c242.jpg'},
+             caption: fbmsg,
+             footer: config.FOOTER,
+             buttons: buttons,
+             headerType: 4,
+             }
+             conn.sendMessage(from, buttonMessage, { quoted: mek })
+             } 
 	      break
 
 case 'sdfb' :
 try{
-    await conn.sendMessage(from, { react: { text: '💎', key: mek.key }})
+  await conn.sendMessage(from, { react: {  text: "🧣", key: mek.key } } )
     if (!q) return reply(`Give link`)
     const sdfbdown = await conn.sendMessage(from , { text: config.VIDEO_DOWN }, { quoted: mek } )
     await conn.sendMessage(from, { delete: sdfbdown.key })
@@ -410,7 +480,7 @@ await conn.sendMessage(from, { delete: sdfbup.key })
 
             case 'hdfb' :
                 try{
-                    await conn.sendMessage(from, { react: { text: '💎', key: mek.key }})
+                  await conn.sendMessage(from, { react: {  text: "🧣", key: mek.key } } )
                     if (!q) return reply(`Give link`)
                        const hdfbdown = await conn.sendMessage(from , { text: config.VIDEO_DOWN }, { quoted: mek } )
                        await conn.sendMessage(from, { delete: hdfbdown.key })
@@ -428,7 +498,7 @@ await conn.sendMessage(from, { delete: sdfbup.key })
                             case "mediafire" :
                                 case "mfire" : 
                               try {
-                                conn.sendMessage(from, { react: { text: '⬇️', key: mek.key }})
+                                await conn.sendMessage(from, { react: {  text: "📁", key: mek.key } } )
                                 if (!q) return reply('Give link')
                                 const baby1 = await mediafire(q)
                                 const filedown = await conn.sendMessage(from , { text: config.FILE_DOWN }, { quoted: mek } )
@@ -446,7 +516,7 @@ await conn.sendMessage(from, { delete: sdfbup.key })
 //.......................................................Img..............................................................\\
 
 case 'img': {
-    conn.sendMessage(from, { react: { text: '🖼️', key: mek.key }})
+  await conn.sendMessage(from, { react: {  text: "🖼️", key: mek.key } } )
 if (!q) return reply("Enter a search term to get Google Image!")
 if (q.includes('sex')) return reply("ආසයි වගේ")
 if (q.includes('xxx')) return reply("ආසයි වගේ")
@@ -472,25 +542,29 @@ break
 //.......................................................Tiktok..............................................................\\
 
 case 'tiktok' : {
+  await conn.sendMessage(from, { react: {  text: "🎗️", key: mek.key } } )
     if (!q.includes('tiktok.com')) return reply('_Need a tiktok url_');
-    const buttons = [
-        {buttonId: prefix + 'nwtik '+q, buttonText: {displayText: 'No watermark'}, type: 1},
-        {buttonId: prefix +'wtik '+q, buttonText: {displayText: 'With watermark'}, type: 1}
-       ]
-      const buttonMessage = {
-          text: '_Select video type_',
-          footer: config.FOOTER,
-          buttons: buttons,
-          headerType: 1
-      }
-       await conn.sendMessage(from, buttonMessage,{quoted: mek})
-
-} 
+    let tkmsg = `Select Video Quality`
+    let buttons = [
+    {buttonId: prefix + 'nwtik ' + q , buttonText: {displayText: 'Without WaterMark'}, type: 1},
+    {buttonId: prefix + 'wtik ' + q , buttonText: {displayText: 'With WaterMark'}, type: 1}
+    ]
+    let buttonMessage = {
+    image: {url: 'https://www.reviewsxp.com/blog/wp-content/uploads/2021/09/Add-a-heading-2-850x491.jpg'},
+    caption: tkmsg,
+    footer: config.FOOTER,
+    buttons: buttons,
+    headerType: 4,
+    }
+    conn.sendMessage(from, buttonMessage, { quoted: mek })
+    } 
+ 
 break
 
 case 'nwtik' :
                 try{
-                    await conn.sendMessage(from, { react: { text: '💎', key: mek.key }})
+                  await conn.sendMessage(from, { react: {  text: "🎗️", key: mek.key } } )
+                    
                     if (!q) return reply(`Give link`)
                        const hdfbdown = await conn.sendMessage(from , { text: config.VIDEO_DOWN }, { quoted: mek } )
                        await conn.sendMessage(from, { delete: hdfbdown.key })
@@ -505,7 +579,7 @@ case 'nwtik' :
 
                             case 'wtik' :
                                 try{
-                                    await conn.sendMessage(from, { react: { text: '💎', key: mek.key }})
+                                  await conn.sendMessage(from, { react: {  text: "👋🎗️", key: mek.key } } )
                                     if (!q) return reply(`Give link`)
                                        const hdfbdown = await conn.sendMessage(from , { text: config.VIDEO_DOWN }, { quoted: mek } )
                                        await conn.sendMessage(from, { delete: hdfbdown.key })
@@ -521,20 +595,49 @@ case 'nwtik' :
 //.......................................................Logo..............................................................\\
 case "logo" :
 		     try {
+          await conn.sendMessage(from, { react: {  text: "🤹‍♀️", key: mek.key } } )
+      
 			 if (!q) return await conn.sendMessage(from , { text: 'Type a name' }, { quoted: mek } )        
-		     
-	  var srh = [];  
-		   for (var i = 1; i < 9; i++) {
-      srh.push({
-          title: 'Logo Pack' + i,
-          description: '',
-          rowId: prefix + 'logo' + 1 + ' ' + q
-      });
-  }
-    const sections = [{
-      title: "Logo Pack List",
-      rows: srh
-  }]
+       let text2 = args[1] ? args[1] : '.' 
+       let text1 = args[0]
+       const sections = [
+        {
+      title: "Logo Results",
+      rows: [
+          {title: "Arcade 8bit", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy2/arcade8bit?apikey=85faf717d0545d14074659ad&text1=" + text1 + "&text2=" + text2},
+          {title: "Banner LOL", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy3/bannerlol?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "Battlefield 4", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy2/battlefield4?apikey=85faf717d0545d14074659ad&&text1=" + text1 + "&text2=" + text2},
+          {title: "Burn Paper", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/burnpaper?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "Carved Wood", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/carvedwood?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "Coffe", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/coffe?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "Cup", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/cup?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "Cup 2", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/cup1?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "Fall Leaves", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/failleaves?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "Flamming", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/flamming?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "Golden Rose", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/goldenrose?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "Harry Potter", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/harrypotter?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "Love", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/love?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "Love Message", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/lovemessage?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "Nature 3D", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/nature3d?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "PUBG", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy2/pubg?apikey=85faf717d0545d14074659ad&&text1=" + text1 + "&text2=" + text2},
+          {title: "Romance", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/romance?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "Shadow", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/shadow?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "Smoke", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/smoke?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "Summer 3D", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/summer3d?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "Summer Nature", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/summernature?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "Tiktok", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy2/tiktok?apikey=85faf717d0545d14074659ad&text1=" + text1 + "&text2=" + text2},
+          {title: "Under Grass", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/undergrass?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "Under Water", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/underwater?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "Wolf Metal", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/wolfmetal?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "Wood Heart", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/woodheart?apikey=85faf717d0545d14074659ad&text=" + q},
+          {title: "Wooden Board", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/woodenboard?apikey=85faf717d0545d14074659ad&text=" + q}
+          
+      ]
+        },
+      
+    ]
+    
+   
     const listMessage = {
       text: 'Results for ' + q,
       footer: config.FOOTER,
@@ -548,245 +651,11 @@ await conn.sendMessage(from , { text: 'error' }, { quoted: mek } )
 } 
 		      
 	 break
-case "logo1" :
-		     try {
-			 if (!q) return await conn.sendMessage(from , { text: 'Type a name' }, { quoted: mek } )        
-		     
-	  var srh = [];  
-		   for (var i = 1; i < 13; i++) {
-      srh.push({
-          title: 'Logo' + i,
-          description: '',
-          rowId: prefix + 'dlogo ' + 'https://raganork-network.vercel.app/api/logo/pubg?style=' + i + '&text=' + q
-      });
-  }
-    const sections = [{
-      title: "Logo List",
-      rows: srh
-  }]
-    const listMessage = {
-      text: 'Results for ' + q,
-      footer: config.FOOTER,
-      title: 'CyberX Logo Maker',
-      buttonText: "Results",
-      sections
-  }
-    await conn.sendMessage(from, listMessage, {quoted: mek })
-		      } catch(e) {
-await conn.sendMessage(from , { text: 'error' }, { quoted: mek } )  
-} 
-		      
-	 break
-     case "logo2" :
-        try {
-        if (!q) return await conn.sendMessage(from , { text: 'Type a name' }, { quoted: mek } )        
-        
- var srh = [];  
-      for (var i = 1; i < 3; i++) {
- srh.push({
-     title: 'Logo' + i,
-     description: '',
-     rowId: prefix + 'dlogo ' + 'https://raganork-network.vercel.app/api/logo/beast?style=' + i + '&text=' + q
- });
-}
-const sections = [{
- title: "Logo List",
- rows: srh
-}]
-const listMessage = {
- text: 'Results for ' + q,
- footer: config.FOOTER,
- title: 'CyberX Logo Maker',
- buttonText: "Results",
- sections
-}
-await conn.sendMessage(from, listMessage, {quoted: mek })
-         } catch(e) {
-await conn.sendMessage(from , { text: 'error' }, { quoted: mek } )  
-} 
-         
-break
-case "logo3" :
-		     try {
-			 if (!q) return await conn.sendMessage(from , { text: 'Type a name' }, { quoted: mek } )        
-		     
-	  var srh = [];  
-		   for (var i = 1; i < 7; i++) {
-      srh.push({
-          title: 'Logo' + i,
-          description: '',
-          rowId: prefix + 'dlogo ' + 'https://raganork-network.vercel.app/api/logo/pubg?style=' + i + '&text=' + q
-      });
-  }
-    const sections = [{
-      title: "Logo List",
-      rows: srh
-  }]
-    const listMessage = {
-      text: 'Results for ' + q,
-      footer: config.FOOTER,
-      title: 'CyberX Logo Maker',
-      buttonText: "Results",
-      sections
-  }
-    await conn.sendMessage(from, listMessage, {quoted: mek })
-		      } catch(e) {
-await conn.sendMessage(from , { text: 'error' }, { quoted: mek } )  
-} 
-		      
-	 break
-     case "logo4" :
-		     try {
-			 if (!q) return await conn.sendMessage(from , { text: 'Type a name' }, { quoted: mek } )        
-		     
-	  var srh = [];  
-		   for (var i = 1; i < 7; i++) {
-      srh.push({
-          title: 'Logo' + i,
-          description: '',
-          rowId: prefix + 'dlogo ' + 'https://raganork-network.vercel.app/api/logo/rrr?style=' + i + '&text=' + q
-      });
-  }
-    const sections = [{
-      title: "Logo List",
-      rows: srh
-  }]
-    const listMessage = {
-      text: 'Results for ' + q,
-      footer: config.FOOTER,
-      title: 'CyberX Logo Maker',
-      buttonText: "Results",
-      sections
-  }
-    await conn.sendMessage(from, listMessage, {quoted: mek })
-		      } catch(e) {
-await conn.sendMessage(from , { text: 'error' }, { quoted: mek } )  
-} 
-		      
-	 break
-     case "logo5" :
-		     try {
-			 if (!q) return await conn.sendMessage(from , { text: 'Type a name' }, { quoted: mek } )        
-		     
-	  var srh = [];  
-		   for (var i = 1; i < 3; i++) {
-      srh.push({
-          title: 'Logo' + i,
-          description: '',
-          rowId: prefix + 'dlogo ' + 'https://raganork-network.vercel.app/api/logo/freefire?style=' + i + '&text=' + q
-      });
-  }
-    const sections = [{
-      title: "Logo List",
-      rows: srh
-  }]
-    const listMessage = {
-      text: 'Results for ' + q,
-      footer: config.FOOTER,
-      title: 'CyberX Logo Maker',
-      buttonText: "Results",
-      sections
-  }
-    await conn.sendMessage(from, listMessage, {quoted: mek })
-		      } catch(e) {
-await conn.sendMessage(from , { text: 'error' }, { quoted: mek } )  
-} 
-		      
-	 break
-     case "logo6" :
-		     try {
-			 if (!q) return await conn.sendMessage(from , { text: 'Type a name' }, { quoted: mek } )        
-		     
-	  var srh = [];  
-		   for (var i = 1; i < 3; i++) {
-      srh.push({
-          title: 'Logo' + i,
-          description: '',
-          rowId: prefix + 'dlogo ' + 'https://raganork-network.vercel.app/api/logo/avengers?style=' + i + '&text=' + q
-      });
-  }
-    const sections = [{
-      title: "Logo List",
-      rows: srh
-  }]
-    const listMessage = {
-      text: 'Results for ' + q,
-      footer: config.FOOTER,
-      title: 'CyberX Logo Maker',
-      buttonText: "Results",
-      sections
-  }
-    await conn.sendMessage(from, listMessage, {quoted: mek })
-		      } catch(e) {
-await conn.sendMessage(from , { text: 'error' }, { quoted: mek } )  
-} 
-		      
-	 break
-     case "logo7" :
-        try {
-        if (!q) return await conn.sendMessage(from , { text: 'Type a name' }, { quoted: mek } )        
-        
- var srh = [];  
-      for (var i = 1; i < 4; i++) {
- srh.push({
-     title: 'Logo' + i,
-     description: '',
-     rowId: prefix + 'dlogo ' + 'https://raganork-network.vercel.app/api/logo/master?style=1&text=' + i + '&text=' + q
- });
-}
-const sections = [{
- title: "Logo List",
- rows: srh
-}]
-const listMessage = {
- text: 'Results for ' + q,
- footer: config.FOOTER,
- title: 'CyberX Logo Maker',
- buttonText: "Results",
- sections
-}
-await conn.sendMessage(from, listMessage, {quoted: mek })
-         } catch(e) {
-await conn.sendMessage(from , { text: 'error' }, { quoted: mek } )  
-} 
-         
-break
-case "logo8" :
-		     try {
-			 if (!q) return await conn.sendMessage(from , { text: 'Type a name' }, { quoted: mek } )        
-		     
-	  var srh = [];  
-		   for (var i = 1; i < 3; i++) {
-      srh.push({
-          title: 'Logo' + i,
-          description: '',
-          rowId: prefix + 'dlogo ' + 'https://raganork-network.vercel.app/api/logo/kgf?style=5&text=' + i + '&text=' + q
-      });
-  }
-    const sections = [{
-      title: "Logo List",
-      rows: srh
-  }]
-    const listMessage = {
-      text: 'Results for ' + q,
-      footer: config.FOOTER,
-      title: 'CyberX Logo Maker',
-      buttonText: "Results",
-      sections
-  }
-    await conn.sendMessage(from, listMessage, {quoted: mek })
-		      } catch(e) {
-await conn.sendMessage(from , { text: 'error' }, { quoted: mek } )  
-} 
-		      
-	 break
+
      
-
-
-
-
      case "dlogo" :
 		     try {
+          await conn.sendMessage(from, { react: {  text: "🪄", key: mek.key } } )
                 reply('Genarating...')
 			 
                await  conn.sendMessage(from, { image: { url: q }, caption: config.CAPTION }, { quoted: mek })
@@ -801,13 +670,13 @@ await conn.sendMessage(from , { text: 'error' }, { quoted: mek } )
      case "down" :                            
      
      try {
-                                conn.sendMessage(from, { react: { text: '⬇️', key: mek.key }})
+      await conn.sendMessage(from, { react: {  text: "⬇️", key: mek.key } } )            
                                 if (!q) return reply('Give Direct link')
                                 if (!q.includes('http')) return reply('Enter direct Link')
                                 const filedown = await conn.sendMessage(from , { text: config.FILE_DOWN }, { quoted: mek } )
                                 await conn.sendMessage(from, { delete: filedown.key })
                                 const fileup = await conn.sendMessage(from , { text: config.FILE_UP }, { quoted: mek } )
-                                const mfile = conn.sendMessage(from, { document: { url: q,}, fileName: q }, {quoted: mek})	
+                                const mfile = conn.sendMessage(from, { document: { url: args[0],}, fileName: args[0] + args[1] }, {quoted: mek})	
                                 await conn.sendMessage(from, { delete: fileup.key })
                             } 
                               catch(e) {

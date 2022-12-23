@@ -13,6 +13,7 @@
       "fluent-ffmpeg": "^2.1.2",
       "jsdom": "^16.4.0",
       "xfarr-api": "latest",
+      "jimp": "^0.16.2", 
       "g-i-s": "^2.1.6",
       "@hapi/boom" : "^10.0.0",
       "node-webpmux": "^3.1.1",  

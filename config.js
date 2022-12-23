@@ -8,7 +8,7 @@ function convertToBool(text, fault = 'true') {
 }
 module.exports = {
 	ALIVE_MSG: process.env.ALIVE_MSG === undefined ? 'I Am Alive Now' : process.env.ALIVE_MSG,
-	ALIVE_LOGO: process.env.ALIVE_LOGO === undefined ? 'https://i.ibb.co/t2t25sD/20221118-073021.jpg' : process.env.ALIVE_LOGO,
+	ALIVE_LOGO: process.env.ALIVE_LOGO === undefined ? 'https://i0.wp.com/trenovision.com/wp-content/uploads/2020/03/official-WHO-bot.jpg' : process.env.ALIVE_LOGO,
     FOOTER: process.env.FOOTER === undefined ? 'CyberX WhatsApp Bot' : process.env.FOOTER,
 	OWNER_NAME: process.env.OWNER_NAME === undefined ? '──⃟͟͞   ʙᴜͥᴅᴅͣʜͫɪᴋᴀ👨‍💻 ⃟͟͞🇱🇰──' : process.env.OWNER_NAME,
 	OWNER_NUMBER: process.env.OWNER_NUMBER === undefined ? '94766866297' : process.env.OWNER_NUMBER,
