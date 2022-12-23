@@ -1,6 +1,7 @@
 ## First you need to Fork the repo & Scan QR code using the given link. Then upload the session file to your forked repo. After that follow the given steps.
 
 [![Run on Repl.it](https://repl.it/badge/github/quiec/whatsasena)](https://astro-qr.astromdqr.repl.co/)
+
 Upload session.json File To Your Forked Repo
 
 ## Deploy on VPS or PC.
