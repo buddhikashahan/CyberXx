@@ -31,8 +31,8 @@ Upload session.json File To Your Forked Repo
 
    5. Clone Repo and install required packages
       
-      git clone https://github.com/I-am-ALPHA/Down
-      cd Down
+      git clone https://github.com/edm-official/CyberX
+      cd CyberX
       yarn install --network-concurrency 1
       
   
