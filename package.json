@@ -16,8 +16,8 @@
       "jimp": "^0.16.2", 
       "g-i-s": "^2.1.6",
       "@hapi/boom" : "^10.0.0",
+      "yt-search": "latest",
       "node-webpmux": "^3.1.1",  
-      "qrcode-terminal": "^0.12.0",
-      "secktor-pack": "latest"
+      "qrcode-terminal": "^0.12.0"
     }
   }

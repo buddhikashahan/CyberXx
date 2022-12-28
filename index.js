@@ -5,7 +5,6 @@ const {
 	getContentType,
     jidDecode
 } = require('@adiwajshing/baileys')
-const yts = require( 'secktor-pack' )
 const { sms } = require('./lib/message');
 const { imageToWebp, videoToWebp, writeExif } = require('./lib/stic')
 const ffmpeg = require('fluent-ffmpeg');
@@ -13,6 +12,7 @@ const xa = require('xfarr-api')
 const { mediafire } = require('./lib/mediafire.js')
 const fetch = require('node-fetch')
 const { fetchJson} = require('./lib/myfunc.js')
+let yts = require('yt-search')
 
 const fs = require('fs')
 const P = require('pino')
@@ -89,128 +89,10 @@ const connectToWA = () => {
             if (!isOwner && body.includes('chat.whatsapp.com')) {
                 await conn.sendMessage(from, { delete: mek.key })
             }       
-			if (!isGroup && !isOwner) {
-               return reply ('Inbox Not Allowed')
-                
-            }
+			
         
 			switch (command) {
 
-//.......................................................Alive..............................................................\\
-
-case 'alive': {
-await conn.sendMessage(from, { react: {  text: "👋", key: mek.key } } )
-let alivemsg = `Hello ${pushname} 
-
-I Am Alive Now
-
-Whatsapp Group : 
-https://chat.whatsapp.com/KmE7YzrrQBk124CrpI8PCd`
-let buttons = [
-{buttonId: prefix + 'owner ', buttonText: {displayText: 'OWNER'}, type: 1},
-{buttonId: prefix + 'menu ', buttonText: {displayText: 'MENU'}, type: 1},
-{buttonId: prefix + 'runtime ', buttonText: {displayText: 'RUN TIME'}, type: 1}
-]
-let buttonMessage = {
-image: {url: config.ALIVE_LOGO},
-caption: alivemsg,
-footer: config.FOOTER,
-buttons: buttons,
-headerType: 4,
-}
-conn.sendMessage(from, buttonMessage, { quoted: mek })
-}
-break
-
-//.......................................................Runtime..............................................................\\
-
-case 'runtime':{          
-  await conn.sendMessage(from, { react: { text: `⚙️`, key: mek.key }})
-   reply (`${runtime(process.uptime())}`)
-  }
-  break
-
-//.......................................................Owner..............................................................\\
-
-case 'owner' : {
-  await conn.sendMessage(from, { react: {  text: "👨‍💻", key: mek.key } } )
-		const vcard = 'BEGIN:VCARD\n' // metadata of the contact card
-            + 'VERSION:3.0\n' 
-            + `FN:` + 'Buddhika' + `\n` // full name
-            + 'TEL;type=CELL;type=VOICE;waid=' + '94766866297' + ':+' + '94766866297' + '\n' // WhatsApp ID + phone number
-            + 'END:VCARD'
- await conn.sendMessage(from,{ contacts: { displayName: 'noureddine_ouafy' , contacts: [{ vcard }]  }} , { quoted: mek })      
-}
-break 
-
-//.......................................................Menu..............................................................\\
-
-case 'menu' : {
-  await conn.sendMessage(from, { react: {  text: "💫", key: mek.key } } )
-let menumsg = `◉═════════════◉
-  *🐉CyberX Commands🐉*
-◉═════════════◉
-
-┌─( *📥ᴅᴏᴡɴʟᴏᴀᴅᴇʀ ᴄᴏᴍᴍᴀɴᴅꜱ* )
-
-*🪄 Command :* .song
-*📒 Description :* Download Songs from youtube 
-
-*🪄 Command :* .video
-*📒 Description :* Download Videos from youtube 
-
-*🪄 Command :* .yt
-*📒 Description :* Download Audio/Video from youtube 
-
-*🪄 Command :* .img
-*📒 Description :* Download images
-
-*🪄 Command :* .fb
-*📒 Description :* Download Facebook videos
-
-*🪄 Command :* .tiktok
-*📒 Description :* Download tiktok videos
-
-*🪄 Command :* .ig
-*📒 Description :* Download Instagram videos
-
-*🪄 Command :* .mediafire 
-*📒 Description :* Download mediafire files
-
-*🪄 Command :* .apk
-*📒 Description :* Download apps
-
-└─────────◉
-┌─( *🔍ꜱᴇᴀʀᴄʜ ᴄᴏᴍᴍᴀɴᴅꜱ* )
-
-*🪄 Command :* .yts
-*📒 Description :* Search videos on youtube 
-
-*🪄 Command :* .truecaller
-*📒 Description :* Find Unknown numbers
-
-└─────────◉
-┌─( *🧰ᴄᴏɴᴠᴇʀᴛ ᴄᴏᴍᴍᴀɴᴅꜱ* )
-
-*🪄 Command :* .sticker
-*📒 Description :* Convert image or video to sticker
-
-└─────────◉
-┌─( 💫ᴏᴛʜᴇʀ ᴄᴏᴍᴍᴀɴᴅꜱ )
-
-*🪄 Command :* .alive
-*📒 Description :* Check if bot is online
-
-*🪄 Command :* .menu
-*📒 Description :* Get command list
-
-└─────────◉`
-reply(menumsg)
-}
-break
-
-
-//.......................................................Apk..............................................................\\                            
 
 case "apk" :
 		     try {
@@ -267,29 +149,6 @@ catch(e) {
   break 
 
 
-//.......................................................Instagram..............................................................\\
-
-case'ig': case'instagram':  try{
-  await conn.sendMessage(from, { react: {  text: "🎉", key: mek.key } } )
-  if (!q.includes('https')) return conn.sendMessage(from , { text: 'Need Url'  }, { quoted: mek } )
- 
-  const viddown = await conn.sendMessage(from , { text: config.VIDEO_DOWN }, { quoted: mek } )
-  await conn.sendMessage(from, { delete: viddown.key })
-  const vidup = await conn.sendMessage(from , { text: config.VIDEO_UP }, { quoted: mek } )
-  axios
-      .get("https://api.lolhuman.xyz/api/instagram?apikey=85faf717d0545d14074659ad&url=" + q)
-      .then(({ data }) => {
-        
-        conn.sendMessage(from, { video: { url: data.result[0] }, caption: config.CAPTION}, { quoted: mek })})
-   await conn.sendMessage(from, { delete: vidup.key })
-  
-} catch(e) {
-  await conn.sendMessage(from , { text: 'NOT FOUND' }, { quoted: mek } ) 
- }
-    break
-
-//.......................................................Truecaller..............................................................\\
-
 case'true': case'truecaller':{
   await conn.sendMessage(from, { react: {  text: "📱", key: mek.key } } )
   let r = await fetchJson(`https://inrl-web.vercel.app/api/truecaller?number=${q}`)
@@ -309,178 +168,6 @@ case'true': case'truecaller':{
 break
 
 
-//.......................................................Youtube..............................................................\\
-case 'yts': case 'ytsearch': {
-
-    await conn.sendMessage(from, { react: {  text: "🔎", key: mek.key } } )
-       if (!q) return reply('Example : ' + prefix + command + ' Chanux bro')
-    var arama = await yts(q)
-    var msg = '';
-   arama.all.map((video) => {
-   msg += ' *🖲️' + video.title + '*\n🔗 ' + video.url + '\n\n'
-   });
-   const results = await conn.sendMessage(from , { text:  msg }, { quoted: mek } )
-   }
-    break	
-                       
-                   case 'play': case 'yt': {
-                    await conn.sendMessage(from, { react: {  text: "🎀", key: mek.key } } )
-               
-       if (!q) return reply('Example : ' + prefix + command + ' lelena')
-
-   let search = await yts(q)
-   let anu = search.videos[0]
-   let buttons = [
-   {buttonId: prefix + 'ytmp4 ' +  anu.url + ' 360p', buttonText: {displayText: 'VIDEO'}, type: 1},
-   {buttonId: '.ytmp3 ' + anu.url + ' 128kbps', buttonText: {displayText: 'AUDIO'}, type: 1}
-   ]
-   let buttonMessage = {
-   image: { url: anu.thumbnail },
-   caption: '┌───[🐉CyberX🐉]\n\n  *📥YOUTUBE DOWNLODER*\n\n│🧚🏻‍♀️ᴛɪᴛʟᴇ: ' + anu.title + '\n\n│ 👀ᴠɪᴇᴡs: ' + anu.views + '\n\n│ 📹 ᴄʜᴀɴɴᴇʟ: ' + anu.author + '\n\n│🖇️ᴜʀʟ: ' + anu.url + '\n\n└───────────◉',
-   footer: 'sᴇʟᴇᴄᴛ ꜰᴏʀᴍᴀᴛ:',
-   buttons: buttons,
-   headerType: 4,
-   }
-   conn.sendMessage(from, buttonMessage, { quoted: mek })
-   }
-   break
-                       case 'song':  {
-                        await conn.sendMessage(from, { react: {  text: "🎧", key: mek.key } } )     
-       if (!q) return reply('Example : ' + prefix + command + ' lelena')
-       var svid = q.replace("shorts/","watch?v=")
-       var s2vid = svid.replace("?feature=share","")
-      let search = await yts(s2vid)
-   let anu = search.videos[0]
-   let buttons = [
-   {buttonId: prefix + 'ytdoc ' +  anu.url , buttonText: {displayText: 'DOCUMENT'}, type: 1},
-   {buttonId: prefix + 'ytmp3 ' + anu.url , buttonText: {displayText: 'AUDIO'}, type: 1}
-   ]
-   let buttonMessage = {
-   image: { url: anu.thumbnail },
-   caption: '┌───[🐉CyberX🐉]\n\n  *📥SONG DOWNLODER*\n\n│🎧sᴏɴɢ: ' + anu.title + '\n\n│ 👀ᴠɪᴇᴡs: ' + anu.views + '\n\n│ 📹 ᴄʜᴀɴɴᴇʟ: ' + anu.author + '\n\n│🖇️ᴜʀʟ: ' + anu.url + '\n\n└───────────◉',
-   footer: 'sᴇʟᴇᴄᴛ ꜰᴏʀᴍᴀᴛ:',
-   buttons: buttons,
-   headerType: 4,
-   }
-   conn.sendMessage(from, buttonMessage, { quoted: mek })
-   }
-   break
-                       
-                       
-                       case 'video':  {
-                        await conn.sendMessage(from, { react: {  text: "🎬", key: mek.key } } )
-       if (!q) return reply('Example : ' + prefix + command + ' lelena')
-       var svid = q.replace("shorts/","watch?v=")
-var s2vid = svid.replace("?feature=share","")
-   let search = await yts(s2vid)
-   let anu = search.videos[0]
-   let buttons = [
-   {buttonId: prefix + 'ytmp4 ' +  anu.url + '360p', buttonText: {displayText: '360p'}, type: 1},
-   {buttonId: prefix + 'ytmp4 ' + anu.url + '480p', buttonText: {displayText: '480p'}, type: 1},
-   {buttonId: prefix + 'ytmp4 ' + anu.url + '720p', buttonText: {displayText: '720p'}, type: 1}
-   ]
-   let buttonMessage = {
-   image: { url: anu.thumbnail },
-   caption: '┌───[🐉CyberX🐉]\n\n  *📥YT VIDEO DOWNLODER*\n\n│📽️ᴠɪᴅᴇᴏ: ' + anu.title + '\n\n│ 👀ᴠɪᴇᴡs: ' + anu.views + '\n\n│ 📹 ᴄʜᴀɴɴᴇʟ: ' + anu.author + '\n\n│🖇️ᴜʀʟ: ' + anu.url + '\n\n└───────────◉',
-   footer: 'sᴇʟᴇᴄᴛ Qᴜᴀʟɪᴛʏ:',
-   buttons: buttons,
-   headerType: 4,
-   }
-   conn.sendMessage(from, buttonMessage, { quoted: mek })
-   }
-   break
-   
-   
-                       
-                       
-   
-   case 'ytmp4': 
-   try {
-    await conn.sendMessage(from, { react: {  text: "🎬", key: mek.key } } )
-   if ( !q.includes('youtu') ) return await conn.sendMessage(from , { text: '*Need yt link*' }, { quoted: mek } )  
-              let { ytv } = require('./lib/y2mate')
-                     let quality = args[1] ? args[1] : '360p'
-                     let media = await ytv(q, quality)
-
-   const viddown = await conn.sendMessage(from , { text: config.VIDEO_DOWN }, { quoted: mek } )
-   await conn.sendMessage(from, { delete: viddown.key })
-   const vidup = await conn.sendMessage(from , { text: config.VIDEO_UP }, { quoted: mek } )
-   const vid = await conn.sendMessage(from, { video: { url: media.dl_link }, mimetype: 'video/mp4', fileName: media.title + '.mp4', caption: config.CAPTION }, { quoted: mek })
-   await conn.sendMessage(from, { delete: vidup.key })
-} catch(e) {
-    await conn.sendMessage(from , { text: 'NOT FOUND' }, { quoted: mek } ) 
-   }
-                 break
-
-break
-case'ytdoc': try{
-  await conn.sendMessage(from, { react: {  text: "🎧", key: mek.key } } )
-  if (!q.includes('https')) return conn.sendMessage(from , { text: 'Need Url'  }, { quoted: mek } )
- 
-  const auddown = await conn.sendMessage(from , { text: config.SONG_DOWN }, { quoted: mek } )
-  await conn.sendMessage(from, { delete: auddown.key })
-  const audup = await conn.sendMessage(from , { text: config.SONG_UP }, { quoted: mek } )
-  axios
-      .get("https://api.lolhuman.xyz/api/ytaudio2?apikey=85faf717d0545d14074659ad&url=" + q)
-      .then(({ data }) => {
-        let result = data.result
-   conn.sendMessage(from, { document: { url:result.link }, mimetype: 'audio/mpeg', fileName:  `${result.title}.mp3` }, { quoted: mek })})
-   await conn.sendMessage(from, { delete: audup.key })
-  
-} catch(e) {
-  await conn.sendMessage(from , { text: 'NOT FOUND' }, { quoted: mek } ) 
- }
-    break
-
-    case'ytmp3': try{
-      await conn.sendMessage(from, { react: {  text: "🎧", key: mek.key } } )
-      if (!q.includes('https')) return conn.sendMessage(from , { text: 'Need Url'  }, { quoted: mek } )
-     
-      const auddown = await conn.sendMessage(from , { text: config.SONG_DOWN }, { quoted: mek } )
-      await conn.sendMessage(from, { delete: auddown.key })
-      const audup = await conn.sendMessage(from , { text: config.SONG_UP }, { quoted: mek } )
-      axios
-          .get("https://api.lolhuman.xyz/api/ytaudio2?apikey=85faf717d0545d14074659ad&url=" + q)
-          .then(({ data }) => {
-            let result = data.result
-       conn.sendMessage(from, { audio: { url:result.link }, mimetype: 'audio/mpeg', fileName:  `${result.title}.mp3` }, { quoted: mek })})
-       await conn.sendMessage(from, { delete: audup.key })
-      
-    } catch(e) {
-      await conn.sendMessage(from , { text: 'NOT FOUND' }, { quoted: mek } ) 
-     }
-        break
-//.......................................................Sticker..............................................................\\
-
-case 'sticker' :
-  await conn.sendMessage(from, { react: {  text: "🪄", key: mek.key } } )
-          const v = sms(conn , mek)
-          const isQuotedViewOnce = v.quoted ? (v.quoted.type === 'viewOnceMessage') : false
-	        const isQuotedImage = v.quoted ? ((v.quoted.type === 'imageMessage') || (isQuotedViewOnce ? (v.quoted.msg.type === 'imageMessage') : false)) : false
-	        const isQuotedVideo = v.quoted ? ((v.quoted.type === 'videoMessage') || (isQuotedViewOnce ? (v.quoted.msg.type === 'videoMessage') : false)) : false
-          if ((v.type === 'imageMessage') || isQuotedImage) { 
-          const cstic = await conn.sendMessage(from , { text: 'Creating...' }, { quoted: mek } )
-          var nameJpg = getRandom('')
-	        isQuotedImage ? await v.quoted.download(nameJpg) : await v.download(nameJpg)
-	        var stik = await imageToWebp(nameJpg + '.jpg')
-	        writeExif(stik, {packname: config.STIC_WM, author: 'CyberX'})
-		      .then(x => v.replyS(x))
-          await conn.sendMessage(from, { delete: cstic.key })
-          }else if ((v.type === 'videoMessage') || isQuotedVideo) {
-	       const cstic = await conn.sendMessage(from , { text: 'creating' }, { quoted: mek } )  
-	       var nameMp4 = getRandom('')
-	       isQuotedVideo ? await v.quoted.download(nameMp4) : await v.download(nameMp4)
-         writeExif(stik, {packname: config.STIC_WM , author: 'CyberX'})
-		     .then(x => v.replyS(x))
-         await conn.sendMessage(from, { delete: cstic.key })
-         } else {
-	       v.reply('Reply to image or video')
-        }
-              break 
-
-            
-
-//.......................................................Fb..............................................................\\
 
 case 'fb' : case 'facebook' : {
   await conn.sendMessage(from, { react: {  text: "🧣", key: mek.key } } )
@@ -530,8 +217,9 @@ await conn.sendMessage(from, { delete: sdfbup.key })
                 await conn.sendMessage(from, { delete: hdfbup.key })
             } catch(e) {
                     await conn.sendMessage(from , { text: 'NOT FOUND' }, { quoted: mek } ) 
-                   }
-                            break
+                   } 
+
+            
 
 //.......................................................Mediafire..............................................................\\                            
 
@@ -638,40 +326,35 @@ case "logo" :
           await conn.sendMessage(from, { react: {  text: "🤹‍♀️", key: mek.key } } )
       
 			 if (!q) return await conn.sendMessage(from , { text: 'Type a name' }, { quoted: mek } )        
-       let text2 = args[1] ? args[1] : '.' 
-       let text1 = args[0]
+       let txt2 = args[1] ? args[1] : '.' 
+       let txt1 = args[0]
        const sections = [
         {
       title: "Logo Results",
       rows: [
-          {title: "Arcade 8bit", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy2/arcade8bit?apikey=85faf717d0545d14074659ad&text1=" + text1 + "&text2=" + text2},
-          {title: "Banner LOL", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy3/bannerlol?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "Battlefield 4", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy2/battlefield4?apikey=85faf717d0545d14074659ad&&text1=" + text1 + "&text2=" + text2},
-          {title: "Burn Paper", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/burnpaper?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "Carved Wood", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/carvedwood?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "Coffe", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/coffe?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "Cup", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/cup?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "Cup 2", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/cup1?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "Fall Leaves", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/failleaves?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "Flamming", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/flamming?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "Golden Rose", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/goldenrose?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "Harry Potter", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/harrypotter?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "Love", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/love?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "Love Message", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/lovemessage?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "Nature 3D", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/nature3d?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "PUBG", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy2/pubg?apikey=85faf717d0545d14074659ad&&text1=" + text1 + "&text2=" + text2},
-          {title: "Romance", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/romance?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "Shadow", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/shadow?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "Smoke", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/smoke?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "Summer 3D", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/summer3d?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "Summer Nature", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/summernature?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "Tiktok", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy2/tiktok?apikey=85faf717d0545d14074659ad&text1=" + text1 + "&text2=" + text2},
-          {title: "Under Grass", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/undergrass?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "Under Water", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/underwater?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "Wolf Metal", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/wolfmetal?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "Wood Heart", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/woodheart?apikey=85faf717d0545d14074659ad&text=" + q},
-          {title: "Wooden Board", rowId: prefix + "dlogo " + "https://api.lolhuman.xyz/api/photooxy1/woodenboard?apikey=85faf717d0545d14074659ad&text=" + q}
-          
+        {title: "Shadow", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/shadow?text=" + q},
+        {title: "Cup", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/cup?text=" + q},
+        {title: "Romantic", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/romantic?text=" + q},
+        {title: "Smoke", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/smoke?text=" + q},
+        {title: "Burn Paper", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/burn_paper?text=" + q},
+        {title: "Naruto", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/naruto?text=" + q},
+        {title: "Love Message", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/love_message?text=" + q},
+        {title: "TikTok", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/tik_tok?text=" + txt1 + "&text_2=" + txt2 },
+        {title: "Flower Heart", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/flower_heart?text=" + q},
+        {title: "Wodden Board", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/wodden_board?text=" + q},
+        {title: "Glowing Neon", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/glowing_neon?text=" + q},
+        {title: "Butterfly", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/butterfly?text=" + q},
+        {title: "Metallic", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/metallic?text=" + q},
+        {title: "Kayu", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/kayu?text=" + q},
+        {title: "Horror", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/horror?text=" + q},
+        {title: "Permen", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/permen?text=" + q},
+        {title: "Silk", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/silk?text=" + q},
+        {title: "Batik", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/batik?text=" + q},
+        {title: "Nature 3D", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/nature3d?text=" + q},
+        {title: "Summer 3D", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/summer3d?text=" + q},
+        {title: "Faill", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/fall?text=" + q},
+        {title: "Neon Lights", rowId: prefix + "dlogo " + "https://api.akuari.my.id/photooxy/neonlights?text=" + q}
+                
       ]
         },
       
