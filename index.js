@@ -5,6 +5,7 @@ const {
 	getContentType,
     jidDecode
 } = require('@adiwajshing/baileys')
+const yts = require( 'yt-search' )
 const { sms } = require('./lib/message');
 const { imageToWebp, videoToWebp, writeExif } = require('./lib/stic')
 const ffmpeg = require('fluent-ffmpeg');
@@ -12,7 +13,6 @@ const xa = require('xfarr-api')
 const { mediafire } = require('./lib/mediafire.js')
 const fetch = require('node-fetch')
 const { fetchJson} = require('./lib/myfunc.js')
-let yts = require('yt-search')
 
 const fs = require('fs')
 const P = require('pino')
@@ -89,10 +89,134 @@ const connectToWA = () => {
             if (!isOwner && body.includes('chat.whatsapp.com')) {
                 await conn.sendMessage(from, { delete: mek.key })
             }       
-			
+			if (!isGroup && !isOwner) {
+               return reply ('Inbox Not Allowed')
+                
+            }
         
 			switch (command) {
 
+//.......................................................Alive..............................................................\\
+
+case 'alive': {
+await conn.sendMessage(from, { react: {  text: "👋", key: mek.key } } )
+let alivemsg = `Hello ${pushname} 
+
+I Am Alive Now
+
+Whatsapp Group : 
+https://chat.whatsapp.com/KmE7YzrrQBk124CrpI8PCd`
+let buttons = [
+{buttonId: prefix + 'owner ', buttonText: {displayText: 'OWNER'}, type: 1},
+{buttonId: prefix + 'menu ', buttonText: {displayText: 'MENU'}, type: 1},
+{buttonId: prefix + 'runtime ', buttonText: {displayText: 'RUN TIME'}, type: 1}
+]
+let buttonMessage = {
+image: {url: config.ALIVE_LOGO},
+caption: alivemsg,
+footer: config.FOOTER,
+buttons: buttons,
+headerType: 4,
+}
+conn.sendMessage(from, buttonMessage, { quoted: mek })
+}
+break
+
+//.......................................................Runtime..............................................................\\
+
+case 'runtime':{          
+  await conn.sendMessage(from, { react: { text: `⚙️`, key: mek.key }})
+   reply (`${runtime(process.uptime())}`)
+  }
+  break
+
+//.......................................................Owner..............................................................\\
+
+case 'owner' : {
+  await conn.sendMessage(from, { react: {  text: "👨‍💻", key: mek.key } } )
+		const vcard = 'BEGIN:VCARD\n' // metadata of the contact card
+            + 'VERSION:3.0\n' 
+            + `FN:` + 'Buddhika' + `\n` // full name
+            + 'TEL;type=CELL;type=VOICE;waid=' + '94766866297' + ':+' + '94766866297' + '\n' // WhatsApp ID + phone number
+            + 'END:VCARD'
+ await conn.sendMessage(from,{ contacts: { displayName: 'noureddine_ouafy' , contacts: [{ vcard }]  }} , { quoted: mek })      
+}
+break 
+
+//.......................................................Menu..............................................................\\
+
+case 'menu' : {
+  await conn.sendMessage(from, { react: {  text: "💫", key: mek.key } } )
+let menumsg = `◉═════════════◉
+  *🐉CyberX Commands🐉*
+◉═════════════◉
+
+┌─( *📥ᴅᴏᴡɴʟᴏᴀᴅᴇʀ ᴄᴏᴍᴍᴀɴᴅꜱ* )
+
+*🪄 Command :* .song
+*📒 Description :* Download Songs from youtube 
+
+*🪄 Command :* .video
+*📒 Description :* Download Videos from youtube 
+
+*🪄 Command :* .yt
+*📒 Description :* Download Audio/Video from youtube 
+
+*🪄 Command :* .img
+*📒 Description :* Download images
+
+*🪄 Command :* .fb
+*📒 Description :* Download Facebook videos
+
+*🪄 Command :* .tiktok
+*📒 Description :* Download tiktok videos
+
+*🪄 Command :* .ig
+*📒 Description :* Download Instagram videos
+
+*🪄 Command :* .mediafire 
+*📒 Description :* Download mediafire files
+
+*🪄 Command :* .apk
+*📒 Description :* Download apps
+
+└─────────◉
+┌─( *🔍ꜱᴇᴀʀᴄʜ ᴄᴏᴍᴍᴀɴᴅꜱ* )
+
+*🪄 Command :* .yts
+*📒 Description :* Search videos on youtube 
+
+*🪄 Command :* .truecaller
+*📒 Description :* Find Unknown numbers
+
+└─────────◉
+┌─( *🧰ᴄᴏɴᴠᴇʀᴛ ᴄᴏᴍᴍᴀɴᴅꜱ* )
+
+*🪄 Command :* .sticker
+*📒 Description :* Convert image or video to sticker
+
+*🪄 Command :* .photo
+*📒 Description :* Convert sticker to image
+
+*🪄 Command :* .logo
+*📒 Description :* Convert text in to logo
+
+└─────────◉
+┌─( 💫ᴏᴛʜᴇʀ ᴄᴏᴍᴍᴀɴᴅꜱ )
+
+*🪄 Command :* .alive
+*📒 Description :* Check if bot is online
+
+*🪄 Command :* .menu
+*📒 Description :* Get command list
+
+└─────────◉`
+reply(menumsg)
+}
+break
+
+
+//.......................................................Apk..............................................................\\                            
 
 case "apk" :
 		     try {
@@ -149,7 +273,29 @@ catch(e) {
   break 
 
 
+//.......................................................Instagram..............................................................\\
+
+case'ig': case'instagram':  try{
+  await conn.sendMessage(from, { react: {  text: "🎉", key: mek.key } } )
+  if (!q.includes('https')) return conn.sendMessage(from , { text: 'Need Url'  }, { quoted: mek } )
+ 
+  const viddown = await conn.sendMessage(from , { text: config.VIDEO_DOWN }, { quoted: mek } )
+  await conn.sendMessage(from, { delete: viddown.key })
+  const vidup = await conn.sendMessage(from , { text: config.VIDEO_UP }, { quoted: mek } )
+  let r = await fetchJson(`https://api-ravindumanoj.ml/?code=instagram&api=YourApiKey&url=${q}`)
+        
+        conn.sendMessage(from, { video: { url: r.result.url }, caption: config.CAPTION}, { quoted: mek })
+   await conn.sendMessage(from, { delete: vidup.key })
+  
+} catch(e) {
+  await conn.sendMessage(from , { text: 'NOT FOUND' }, { quoted: mek } ) 
+ }
+    break
+
+//.......................................................Truecaller..............................................................\\
+
 case'true': case'truecaller':{
+  if (!q) return await conn.sendMessage(from , { text: 'Example : ' + prefix + command + '94766866297'  }, { quoted: mek } ) 
   await conn.sendMessage(from, { react: {  text: "📱", key: mek.key } } )
   let r = await fetchJson(`https://inrl-web.vercel.app/api/truecaller?number=${q}`)
     let rsltd = `
@@ -168,16 +314,207 @@ case'true': case'truecaller':{
 break
 
 
+//.......................................................Youtube..............................................................\\
+case 'yts': case 'ytsearch': {
+
+    await conn.sendMessage(from, { react: {  text: "🔎", key: mek.key } } )
+       if (!q) return reply('Example : ' + prefix + command + ' Chanux bro')
+    var arama = await yts(q)
+    var msg = '';
+   arama.all.map((video) => {
+   msg += ' *🖲️' + video.title + '*\n🔗 ' + video.url + '\n\n'
+   });
+   const results = await conn.sendMessage(from , { text:  msg }, { quoted: mek } )
+   }
+    break	
+                       
+                   case 'play': case 'yt': {
+                    await conn.sendMessage(from, { react: {  text: "🎀", key: mek.key } } )
+               
+       if (!q) return reply('Example : ' + prefix + command + ' lelena')
+
+   let search = await yts(q)
+   let anu = search.videos[0]
+   let buttons = [
+   {buttonId: prefix + 'ytmp4 ' +  anu.url + ' 360p', buttonText: {displayText: 'VIDEO'}, type: 1},
+   {buttonId: '.ytmp3 ' + anu.url + ' 128kbps', buttonText: {displayText: 'AUDIO'}, type: 1}
+   ]
+   let buttonMessage = {
+   image: { url: anu.thumbnail },
+   caption: '┌───[🐉CyberX🐉]\n\n  *📥YOUTUBE DOWNLODER*\n\n│🧚🏻‍♀️ᴛɪᴛʟᴇ: ' + anu.title + '\n\n│ 👀ᴠɪᴇᴡs: ' + anu.views + '\n\n│ 📹 ᴄʜᴀɴɴᴇʟ: ' + anu.author + '\n\n│🖇️ᴜʀʟ: ' + anu.url + '\n\n└───────────◉',
+   footer: 'sᴇʟᴇᴄᴛ ꜰᴏʀᴍᴀᴛ:',
+   buttons: buttons,
+   headerType: 4,
+   }
+   conn.sendMessage(from, buttonMessage, { quoted: mek })
+   }
+   break
+                       case 'song':  {
+                        await conn.sendMessage(from, { react: {  text: "🎧", key: mek.key } } )     
+       if (!q) return reply('Example : ' + prefix + command + ' lelena')
+       var svid = q.replace("shorts/","watch?v=")
+       var s2vid = svid.replace("?feature=share","")
+      let search = await yts(s2vid)
+   let anu = search.videos[0]
+   let buttons = [
+   {buttonId: prefix + 'ytdoc ' +  anu.url , buttonText: {displayText: 'DOCUMENT'}, type: 1},
+   {buttonId: prefix + 'ytmp3 ' + anu.url , buttonText: {displayText: 'AUDIO'}, type: 1}
+   ]
+   let buttonMessage = {
+   image: { url: anu.thumbnail },
+   caption: '┌───[🐉CyberX🐉]\n\n  *📥SONG DOWNLODER*\n\n│🎧sᴏɴɢ: ' + anu.title + '\n\n│ 👀ᴠɪᴇᴡs: ' + anu.views + '\n\n│ 📹 ᴄʜᴀɴɴᴇʟ: ' + anu.author + '\n\n│🖇️ᴜʀʟ: ' + anu.url + '\n\n└───────────◉',
+   footer: 'sᴇʟᴇᴄᴛ ꜰᴏʀᴍᴀᴛ:',
+   buttons: buttons,
+   headerType: 4,
+   }
+   conn.sendMessage(from, buttonMessage, { quoted: mek })
+   }
+   break
+                       
+                       
+                       case 'video':  {
+                        await conn.sendMessage(from, { react: {  text: "🎬", key: mek.key } } )
+       if (!q) return reply('Example : ' + prefix + command + ' lelena')
+       var svid = q.replace("shorts/","watch?v=")
+var s2vid = svid.replace("?feature=share","")
+   let search = await yts(s2vid)
+   let anu = search.videos[0]
+   let buttons = [
+   {buttonId: prefix + 'ytmp4 ' +  anu.url + '360p', buttonText: {displayText: '360p'}, type: 1},
+   {buttonId: prefix + 'ytmp4 ' + anu.url + '480p', buttonText: {displayText: '480p'}, type: 1},
+   {buttonId: prefix + 'ytmp4 ' + anu.url + '720p', buttonText: {displayText: '720p'}, type: 1}
+   ]
+   let buttonMessage = {
+   image: { url: anu.thumbnail },
+   caption: '┌───[🐉CyberX🐉]\n\n  *📥YT VIDEO DOWNLODER*\n\n│📽️ᴠɪᴅᴇᴏ: ' + anu.title + '\n\n│ 👀ᴠɪᴇᴡs: ' + anu.views + '\n\n│ 📹 ᴄʜᴀɴɴᴇʟ: ' + anu.author + '\n\n│🖇️ᴜʀʟ: ' + anu.url + '\n\n└───────────◉',
+   footer: 'sᴇʟᴇᴄᴛ Qᴜᴀʟɪᴛʏ:',
+   buttons: buttons,
+   headerType: 4,
+   }
+   conn.sendMessage(from, buttonMessage, { quoted: mek })
+   }
+   break
+   
+   
+                       
+                       
+   
+   case 'ytmp4': 
+   try {
+    await conn.sendMessage(from, { react: {  text: "🎬", key: mek.key } } )
+   if ( !q.includes('youtu') ) return await conn.sendMessage(from , { text: '*Need yt link*' }, { quoted: mek } )  
+              let { ytv } = require('./lib/y2mate')
+                     let quality = args[1] ? args[1] : '360p'
+                     let media = await ytv(q, quality)
+
+   const viddown = await conn.sendMessage(from , { text: config.VIDEO_DOWN }, { quoted: mek } )
+   await conn.sendMessage(from, { delete: viddown.key })
+   const vidup = await conn.sendMessage(from , { text: config.VIDEO_UP }, { quoted: mek } )
+   const vid = await conn.sendMessage(from, { video: { url: media.dl_link }, mimetype: 'video/mp4', fileName: media.title + '.mp4', caption: config.CAPTION }, { quoted: mek })
+   await conn.sendMessage(from, { delete: vidup.key })
+} catch(e) {
+    await conn.sendMessage(from , { text: 'NOT FOUND' }, { quoted: mek } ) 
+   }
+                 break
+
+break
+case'ytdoc': try{
+  await conn.sendMessage(from, { react: {  text: "🎧", key: mek.key } } )
+  if (!q.includes('https')) return conn.sendMessage(from , { text: 'Need Url'  }, { quoted: mek } )
+  
+  const auddown = await conn.sendMessage(from , { text: config.SONG_DOWN }, { quoted: mek } )
+  await conn.sendMessage(from, { delete: auddown.key })
+  const res = await fetchJson("https://astromdapi.cyclic.app/api/download/ytmp3?url=" + q + "&apikey=ASTRO")
+
+  const audup = await conn.sendMessage(from , { text: config.SONG_UP }, { quoted: mek } )
+   conn.sendMessage(from, { document: { url:res.download }, mimetype: 'audio/mpeg', fileName:  `${res.title}.mp3` }, { quoted: mek })
+   await conn.sendMessage(from, { delete: audup.key })
+  
+} catch(e) {
+  await conn.sendMessage(from , { text: 'NOT FOUND' }, { quoted: mek } ) 
+ }
+    break
+
+    case'ytmp3': try{
+      await conn.sendMessage(from, { react: {  text: "🎧", key: mek.key } } )
+      if (!q.includes('https')) return conn.sendMessage(from , { text: 'Need Url'  }, { quoted: mek } )
+     
+      const auddown = await conn.sendMessage(from , { text: config.SONG_DOWN }, { quoted: mek } )
+      await conn.sendMessage(from, { delete: auddown.key })
+      const audup = await conn.sendMessage(from , { text: config.SONG_UP }, { quoted: mek } )
+        const res = await fetchJson("https://astromdapi.cyclic.app/api/download/ytmp3?url=" + q + "&apikey=ASTRO")
+       conn.sendMessage(from, { audio: { url:res.download }, mimetype: 'audio/mpeg', fileName:  `${res.title}.mp3` }, { quoted: mek })
+       await conn.sendMessage(from, { delete: audup.key })
+      
+    } catch(e) {
+      await conn.sendMessage(from , { text: 'NOT FOUND' }, { quoted: mek } ) 
+     }
+        break
+//.......................................................Sticker..............................................................\\
+
+case 'sticker' :
+  await conn.sendMessage(from, { react: {  text: "🪄", key: mek.key } } )
+          const v = sms(conn , mek)
+          const isQuotedViewOnce = v.quoted ? (v.quoted.type === 'viewOnceMessage') : false
+	        const isQuotedImage = v.quoted ? ((v.quoted.type === 'imageMessage') || (isQuotedViewOnce ? (v.quoted.msg.type === 'imageMessage') : false)) : false
+	        const isQuotedVideo = v.quoted ? ((v.quoted.type === 'videoMessage') || (isQuotedViewOnce ? (v.quoted.msg.type === 'videoMessage') : false)) : false
+          if ((v.type === 'imageMessage') || isQuotedImage) { 
+          const cstic = await conn.sendMessage(from , { text: 'Creating...' }, { quoted: mek } )
+          var nameJpg = getRandom('')
+	        isQuotedImage ? await v.quoted.download(nameJpg) : await v.download(nameJpg)
+	        var stik = await imageToWebp(nameJpg + '.jpg')
+	        writeExif(stik, {packname: config.STIC_WM, author: 'CyberX'})
+		      .then(x => v.replyS(x))
+          await conn.sendMessage(from, { delete: cstic.key })
+          }else if ((v.type === 'videoMessage') || isQuotedVideo) {
+	       const cstic = await conn.sendMessage(from , { text: 'creating' }, { quoted: mek } )  
+	       var nameMp4 = getRandom('')
+	       isQuotedVideo ? await v.quoted.download(nameMp4) : await v.download(nameMp4)
+         writeExif(stik, {packname: config.STIC_WM , author: 'CyberX'})
+		     .then(x => v.replyS(x))
+         await conn.sendMessage(from, { delete: cstic.key })
+         } else {
+	       v.reply('Reply to image or video')
+        }
+              break 
+
+
+              case 'stickerimage' : case 'photo' : {
+  await conn.sendMessage(from, { react: {  text: "🪄", key: mek.key } } )
+
+const v = sms(conn , mek)
+  const isQuotedSticker = v.quoted ? (v.quoted.type === 'stickerMessage') : false
+  if (!isQuotedSticker) return v.reply('reply to a sticker')
+	const cre = await conn.sendMessage(from , { text: 'Creating...'  } , {quoted: mek})
+	var nameWebp = getRandom('')
+await v.quoted.download(nameWebp)
+ffmpeg(`${nameWebp}.webp`)
+            .fromFormat('webp_pipe')
+            .save('output.jpg')
+            .on('end', async () => {
+                await conn.sendMessage(from, { image : fs.readFileSync('output.jpg') , caption: config.CAPTION, } , { quoted: mek });
+	        await conn.sendMessage(from, { delete: cre.key })
+	        await fs.unlinkSync(nameWebp + '.webp')
+            })}
+              break 
+
+            
+
+//.......................................................Fb..............................................................\\
 
 case 'fb' : case 'facebook' : {
   await conn.sendMessage(from, { react: {  text: "🧣", key: mek.key } } )
 	     if (!q) return await conn.sendMessage(from , { text: 'need fb link' }, { quoted: mek } )   
 	     const isfb = q.includes('facebook.com')? q.includes('facebook.com') : q.includes('fb.watch')? q.includes('fb.watch') : ''
              if (!isfb) return await conn.sendMessage(from , { text: 'need fb link' }, { quoted: mek } )  
-             let fbmsg = `Select Video Quality`
+             const res = await fetchJson("https://astromdapi.cyclic.app/api/download/facebook?url=" + q + "?fs=e&s=cl&flite=scwspnss&apikey=ASTRO")
+             const r = res.result[0]
+             let fbmsg = `🧚🏻‍♀️ᴛɪᴛʟᴇ: ${r.meta.title}
+             
+Select Video Quality`
              let buttons = [
-             {buttonId: prefix + 'hdfb ' + q , buttonText: {displayText: 'HD'}, type: 1},
-             {buttonId: prefix + 'sdfb ' + q , buttonText: {displayText: 'SD'}, type: 1}
+             {buttonId: prefix + 'dfb ' + r.hd.url , buttonText: {displayText: 'HD QUALITY'}, type: 1},
+             {buttonId: prefix + 'dfb ' + r.sd.url , buttonText: {displayText: 'SD QUALITY'}, type: 1}
              ]
              let buttonMessage = {
              image: {url: 'https://i.pinimg.com/736x/7c/a2/53/7ca2532387a96ae6b775ee6545b6c242.jpg'},
@@ -190,34 +527,19 @@ case 'fb' : case 'facebook' : {
              } 
 	      break
 
-case 'sdfb' :
+case 'dfb' :
 try{
   await conn.sendMessage(from, { react: {  text: "🧣", key: mek.key } } )
-    if (!q) return reply(`Give link`)
     const sdfbdown = await conn.sendMessage(from , { text: config.VIDEO_DOWN }, { quoted: mek } )
     await conn.sendMessage(from, { delete: sdfbdown.key })
     const sdfbup = await conn.sendMessage(from , { text: config.VIDEO_UP }, { quoted: mek } )
 xa.downloader.facebook(q).then(data => {
-conn.sendMessage(from, { video: { url: data.sd }, caption: config.CAPTION}, { quoted: mek })})
+conn.sendMessage(from, { video: { url: q }, caption: config.CAPTION}, { quoted: mek })})
 await conn.sendMessage(from, { delete: sdfbup.key })
 } catch(e) {
     await conn.sendMessage(from , { text: 'NOT FOUND' }, { quoted: mek } ) 
    }
             break      
-
-            case 'hdfb' :
-                try{
-                  await conn.sendMessage(from, { react: {  text: "🧣", key: mek.key } } )
-                    if (!q) return reply(`Give link`)
-                       const hdfbdown = await conn.sendMessage(from , { text: config.VIDEO_DOWN }, { quoted: mek } )
-                       await conn.sendMessage(from, { delete: hdfbdown.key })
-                       const hdfbup = await conn.sendMessage(from , { text: config.VIDEO_UP }, { quoted: mek } )
-                xa.downloader.facebook(q).then(data => {
-                conn.sendMessage(from, { video: { url: data.hd }, caption: config.CAPTION}, { quoted: mek })})
-                await conn.sendMessage(from, { delete: hdfbup.key })
-            } catch(e) {
-                    await conn.sendMessage(from , { text: 'NOT FOUND' }, { quoted: mek } ) 
-                   } 
 
             
 
@@ -226,6 +548,7 @@ await conn.sendMessage(from, { delete: sdfbup.key })
                             case "mediafire" :
                                 case "mfire" : 
                               try {
+                                if (!q.includes('http')) return reply('_Need a url_')
                                 await conn.sendMessage(from, { react: {  text: "📁", key: mek.key } } )
                                 if (!q) return reply('Give link')
                                 const baby1 = await mediafire(q)
