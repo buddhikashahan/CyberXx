@@ -11,7 +11,6 @@ const P = require('pino')
 const qrcode = require('qrcode-terminal')
 const util = require('util')
 const config = require('./config')
-const { getBuffer, getGroupAdmins, getRandom, h2k, isUrl, Json, runtime, sleep } = require('./lib/functions')
 const { state, saveState } = useSingleFileAuthState('./session.json')
 
 const prefix = '.'
@@ -113,28 +112,7 @@ conn.sendMessage(from, buttonMessage, { quoted: mek })
 }
 break
 
-//.......................................................Runtime..............................................................\\
 
-case 'runtime':{          
-  await conn.sendMessage(from, { react: { text: `⚙️`, key: mek.key }})
-   reply (`${runtime(process.uptime())}`)
-  }
-  break
-
-//.......................................................Owner..............................................................\\
-
-case 'owner' : {
-  await conn.sendMessage(from, { react: {  text: "👨‍💻", key: mek.key } } )
-		const vcard = 'BEGIN:VCARD\n' // metadata of the contact card
-            + 'VERSION:3.0\n' 
-            + `FN:` + 'Buddhika' + `\n` // full name
-            + 'TEL;type=CELL;type=VOICE;waid=' + '94766866297' + ':+' + '94766866297' + '\n' // WhatsApp ID + phone number
-            + 'END:VCARD'
- await conn.sendMessage(from,{ contacts: { displayName: 'noureddine_ouafy' , contacts: [{ vcard }]  }} , { quoted: mek })      
-}
-break 
-
-//.......................................................Menu..............................................................\\
 
 
 
