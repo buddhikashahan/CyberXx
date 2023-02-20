@@ -11,7 +11,6 @@ const P = require('pino')
 const qrcode = require('qrcode-terminal')
 const util = require('util')
 const config = require('./config')
-const axios = require('axios')
 const { getBuffer, getGroupAdmins, getRandom, h2k, isUrl, Json, runtime, sleep } = require('./lib/functions')
 const { state, saveState } = useSingleFileAuthState('./session.json')
 
