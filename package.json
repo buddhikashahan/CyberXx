@@ -7,17 +7,6 @@
       "pino": "^7.0.5",
       "sequelize" : "^6.19.0" ,
       "cheerio": "^1.0.0-rc.10",
-      "@bochilteam/scraper": "^3.0.0",
-      "node-fetch": "^2.6.1" ,
-      "util": "^0.12.4",
-      "fluent-ffmpeg": "^2.1.2",
-      "jsdom": "^16.4.0",
-      "xfarr-api": "latest",
-      "jimp": "^0.16.2", 
-      "g-i-s": "^2.1.6",
-      "@hapi/boom" : "^10.0.0",
-      "yt-search": "latest",
-      "node-webpmux": "^3.1.1",  
       "qrcode-terminal": "^0.12.0"
     }
   }
