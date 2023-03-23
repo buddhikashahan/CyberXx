@@ -7,6 +7,7 @@
       "pino": "^7.0.5",
       "sequelize" : "^6.19.0" ,
       "cheerio": "^1.0.0-rc.10",
-      "qrcode-terminal": "^0.12.0"
+      "qrcode-terminal": "^0.12.0",
+      "esana-node-api": "latest"
     }
   }
